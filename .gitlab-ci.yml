@@ -1,0 +1,15 @@
+stages: [mirror]
+
+mirror_from_github:
+  stage: mirror
+  image: alpine:3.19
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - apk add --no-cache git
+    - git clone --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/rfernandezfranco/django-static-compress.git" repo.git
+    - cd repo.git
+    - git remote set-url --push origin "https://oauth2:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git push --mirror
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
