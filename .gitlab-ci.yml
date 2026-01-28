@@ -7,11 +7,11 @@ mirror_from_github:
     GIT_STRATEGY: none
   script:
     - apk add --no-cache git ca-certificates
-    - cp "$GITLAB_CA_PEM" /usr/local/share/ca-certificates/gitlab.crt
+    - awk 'BEGIN{c=0}/-----BEGIN CERTIFICATE-----/{c++} {print > ("/usr/local/share/ca-certificates/gitlab-" c ".crt")}' "$GITLAB_CA_PEM"
     - update-ca-certificates
     - git clone --mirror "https://x-access-token:${GITHUB_TOKEN}@github.com/rfernandezfranco/django-static-compress.git" repo.git
     - cd repo.git
-    - git remote set-url --push origin "https://oauth2:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git remote set-url --push origin "${CI_SERVER_URL/https:\/\//https:\/\/oauth2:${GITLAB_PUSH_TOKEN}@}/${CI_PROJECT_PATH}.git"
     - git push --mirror
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
