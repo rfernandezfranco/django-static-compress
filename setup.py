@@ -10,7 +10,7 @@ setup(
     license="MIT",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=["Django", "Brotli~=1.0.9", "zopfli~=0.1.8"],
+    install_requires=["Django>=4.2", "Brotli~=1.0.9", "zopfli~=0.1.8"],
     python_requires=">=3.10",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
