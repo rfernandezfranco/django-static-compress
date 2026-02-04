@@ -55,7 +55,9 @@ class CompressMixin:
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
-                raise
+                raise ImproperlyConfigured(
+                    "Storage must implement exists() or provide path() for {}".format(name)
+                )
             return os.path.exists(path)
 
     def _storage_size(self, name):
@@ -64,7 +66,9 @@ class CompressMixin:
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
-                raise
+                raise ImproperlyConfigured(
+                    "Storage must implement size() or provide path() for {}".format(name)
+                )
             return os.path.getsize(path)
 
     def _storage_get_accessed_time(self, name):
@@ -73,7 +77,9 @@ class CompressMixin:
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
-                raise
+                raise ImproperlyConfigured(
+                    "Storage must implement get_accessed_time() or provide path() for {}".format(name)
+                )
             return self._datetime_from_timestamp(getatime(path))
 
     def _storage_get_created_time(self, name):
@@ -82,7 +88,9 @@ class CompressMixin:
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
-                raise
+                raise ImproperlyConfigured(
+                    "Storage must implement get_created_time() or provide path() for {}".format(name)
+                )
             return self._datetime_from_timestamp(getctime(path))
 
     def _storage_get_modified_time(self, name):
@@ -91,7 +99,9 @@ class CompressMixin:
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
-                raise
+                raise ImproperlyConfigured(
+                    "Storage must implement get_modified_time() or provide path() for {}".format(name)
+                )
             return self._datetime_from_timestamp(getmtime(path))
 
     def get_alternate_compressed_name(self, name):
