@@ -117,11 +117,11 @@ class CompressMixin:
                     if out:
                         self._save(dest_compressor_path, out)
                         saved_any = True
-                        if not self.keep_original:
-                            self.delete(name)
                         yield dest_path, dest_compressor_path, True
 
                     file.seek(0)
+                if saved_any and not self.keep_original:
+                    self.delete(name)
 
     def _get_dest_path(self, path):
         if hasattr(self, "hashed_files"):
