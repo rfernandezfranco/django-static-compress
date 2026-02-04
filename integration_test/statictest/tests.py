@@ -3,8 +3,44 @@ import tempfile
 from pathlib import Path
 import gzip
 
+from django.core.files.base import ContentFile
+from django.core.files.storage import Storage
+from django.utils import timezone
+
 from django.test import SimpleTestCase
 from django.core.management import call_command
+
+
+class PathlessBaseStorage(Storage):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._files = {}
+        self._mtimes = {}
+
+    def path(self, name):
+        raise NotImplementedError
+
+    def _open(self, name, mode="rb"):
+        return ContentFile(self._files[name])
+
+    def _save(self, name, content):
+        data = content.read()
+        self._files[name] = data
+        self._mtimes[name] = timezone.now()
+        return name
+
+    def delete(self, name):
+        self._files.pop(name, None)
+        self._mtimes.pop(name, None)
+
+    def exists(self, name):
+        return name in self._files
+
+    def size(self, name):
+        return len(self._files[name])
+
+    def get_modified_time(self, name):
+        return self._mtimes[name]
 
 
 class CollectStaticTest(SimpleTestCase):
@@ -225,3 +261,32 @@ class CollectStaticTest(SimpleTestCase):
                 self.assertFileExist(output_file_path)
                 self.assertEqual(output_file_path.read_bytes(), expected_content)
                 self.assertFileNotExist(compressed_file_path)
+
+    def test_post_process_storage_without_path(self):
+        from static_compress.mixin import CompressMixin
+
+        class PathlessCompressedStorage(CompressMixin, PathlessBaseStorage):
+            pass
+
+        class SourceStorage:
+            def __init__(self, mtime):
+                self._mtime = mtime
+
+            def get_modified_time(self, name):
+                return self._mtime
+
+        with self.settings(
+            STATIC_COMPRESS_MIN_SIZE_KB=1,
+            STATIC_COMPRESS_METHODS=["gz+zlib"],
+            STATIC_COMPRESS_FILE_EXTS=["js"],
+        ):
+            storage = PathlessCompressedStorage()
+            storage._files["test.js"] = b"a" * 5000
+            storage._mtimes["test.js"] = timezone.now()
+
+            source_storage = SourceStorage(storage._mtimes["test.js"])
+            paths = {"test.js": (source_storage, "test.js")}
+
+            list(storage.post_process(paths, dry_run=False))
+
+            self.assertTrue(storage.exists("test.js.gz"))
