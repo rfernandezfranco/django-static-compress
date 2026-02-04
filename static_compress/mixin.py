@@ -108,18 +108,17 @@ class CompressMixin:
     def get_accessed_time(self, name):
         if self.keep_original:
             return super().get_accessed_time(name)
-        return self._datetime_from_timestamp(getatime(self.get_alternate_compressed_path(name)))
+        return self._storage_get_accessed_time(self.get_alternate_compressed_name(name))
 
     def get_created_time(self, name):
         if self.keep_original:
             return super().get_created_time(name)
-        return self._datetime_from_timestamp(getctime(self.get_alternate_compressed_path(name)))
+        return self._storage_get_created_time(self.get_alternate_compressed_name(name))
 
     def get_modified_time(self, name):
         if self.keep_original:
             return super().get_modified_time(name)
-        alt = self.get_alternate_compressed_path(name)
-        return self._datetime_from_timestamp(getmtime(alt))
+        return self._storage_get_modified_time(self.get_alternate_compressed_name(name))
 
     def post_process(self, paths, dry_run=False, **options):
         if hasattr(super(), "post_process"):
