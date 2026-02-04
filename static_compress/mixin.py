@@ -93,33 +93,19 @@ class CompressMixin:
                         self.delete(dest_compressor_path)
                 continue
             src_mtime = source_storage.get_modified_time(path)
-            with self._open(dest_path) as file:
-                for compressor in self.compressors:
-                    dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
-                    # Check if the original file has been changed.
-                    # If not, no need to compress again.
-                    full_compressed_path = self.path(dest_compressor_path)
-                    try:
-                        dest_mtime = self._datetime_from_timestamp(getmtime(full_compressed_path))
-                        file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
-                    except FileNotFoundError:
-                        file_is_unmodified = False
-                    if file_is_unmodified:
-                        continue
-
-                    # Delete old gzip file, or Nginx will pick the old file to serve.
-                    # Note: Django won't overwrite the file, so we have to delete it ourselves.
-                    if self.exists(dest_compressor_path):
-                        self.delete(dest_compressor_path)
-                    out = compressor.compress(path, file)
-
-                    if out:
-                        self._save(dest_compressor_path, out)
-                        if not self.keep_original:
-                            self.delete(name)
-                        yield dest_path, dest_compressor_path, True
-
-                    file.seek(0)
+            to_compress = []
+            for compressor in self.compressors:
+                dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
+                # Check if the original file has been changed.
+                # If not, no need to compress again.
+                full_compressed_path = self.path(dest_compressor_path)
+                try:
+                    dest_mtime = self._datetime_from_timestamp(getmtime(full_compressed_path))
+                    file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
+                except FileNotFoundError:
+                    file_is_unmodified = False
+                if not file_is_unmodified:
+                    to_compress.append((compressor, dest_compressor_path))
 
     def _get_dest_path(self, path):
         if hasattr(self, "hashed_files"):
