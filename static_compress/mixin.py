@@ -43,6 +43,57 @@ class CompressMixin:
             raise ImproperlyConfigured("STATIC_COMPRESS_METHODS: gz and gz+zlib cannot be used at the same time.")
         self.compressors = [METHOD_MAPPING[k]() for k in valid]
 
+    def _try_path(self, name):
+        try:
+            return self.path(name)
+        except (AttributeError, NotImplementedError):
+            return None
+
+    def _storage_exists(self, name):
+        try:
+            return self.exists(name)
+        except (AttributeError, NotImplementedError):
+            path = self._try_path(name)
+            if path is None:
+                raise
+            return os.path.exists(path)
+
+    def _storage_size(self, name):
+        try:
+            return self.size(name)
+        except (AttributeError, NotImplementedError):
+            path = self._try_path(name)
+            if path is None:
+                raise
+            return os.path.getsize(path)
+
+    def _storage_get_accessed_time(self, name):
+        try:
+            return super().get_accessed_time(name)
+        except (AttributeError, NotImplementedError):
+            path = self._try_path(name)
+            if path is None:
+                raise
+            return self._datetime_from_timestamp(getatime(path))
+
+    def _storage_get_created_time(self, name):
+        try:
+            return super().get_created_time(name)
+        except (AttributeError, NotImplementedError):
+            path = self._try_path(name)
+            if path is None:
+                raise
+            return self._datetime_from_timestamp(getctime(path))
+
+    def _storage_get_modified_time(self, name):
+        try:
+            return super().get_modified_time(name)
+        except (AttributeError, NotImplementedError):
+            path = self._try_path(name)
+            if path is None:
+                raise
+            return self._datetime_from_timestamp(getmtime(path))
+
     def get_alternate_compressed_path(self, name):
         for compressor in self.compressors:
             ext = compressor.extension
