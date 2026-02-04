@@ -94,16 +94,16 @@ class CompressMixin:
                 raise
             return self._datetime_from_timestamp(getmtime(path))
 
-    def get_alternate_compressed_path(self, name):
+    def get_alternate_compressed_name(self, name):
         for compressor in self.compressors:
             ext = compressor.extension
             if name.endswith(".{}".format(ext)):
-                path = self.path(name)
+                candidate = name
             else:
-                path = self.path("{}.{}".format(name, ext))
-            if os.path.exists(path):
-                return path
-        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), path)
+                candidate = "{}.{}".format(name, ext)
+            if self._storage_exists(candidate):
+                return candidate
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), name)
 
     def get_accessed_time(self, name):
         if self.keep_original:
