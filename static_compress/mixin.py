@@ -148,9 +148,8 @@ class CompressMixin:
                     dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
                     # Check if the original file has been changed.
                     # If not, no need to compress again.
-                    full_compressed_path = self.path(dest_compressor_path)
                     try:
-                        dest_mtime = self._datetime_from_timestamp(getmtime(full_compressed_path))
+                        dest_mtime = self._storage_get_modified_time(dest_compressor_path)
                         file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
                     except FileNotFoundError:
                         file_is_unmodified = False
