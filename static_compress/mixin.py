@@ -94,6 +94,7 @@ class CompressMixin:
                 continue
             src_mtime = source_storage.get_modified_time(path)
             with self._open(dest_path) as file:
+                saved_any = False
                 for compressor in self.compressors:
                     dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
                     # Check if the original file has been changed.
@@ -115,6 +116,7 @@ class CompressMixin:
 
                     if out:
                         self._save(dest_compressor_path, out)
+                        saved_any = True
                         if not self.keep_original:
                             self.delete(name)
                         yield dest_path, dest_compressor_path, True
