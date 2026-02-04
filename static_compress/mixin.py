@@ -106,6 +106,8 @@ class CompressMixin:
                     file_is_unmodified = False
                 if not file_is_unmodified:
                     to_compress.append((compressor, dest_compressor_path))
+            if not to_compress:
+                continue
 
     def _get_dest_path(self, path):
         if hasattr(self, "hashed_files"):
