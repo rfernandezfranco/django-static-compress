@@ -87,7 +87,7 @@ class CompressMixin:
 
     def _storage_get_modified_time(self, name):
         try:
-            return super().get_modified_time(name)
+            return super(CompressMixin, self).get_modified_time(name)
         except (AttributeError, NotImplementedError):
             path = self._try_path(name)
             if path is None:
