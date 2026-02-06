@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Migrate development linting from Pylint to Ruff, drop `pylintrc`, and centralize Ruff settings in `pyproject.toml`.
+- Modernize pre-commit and development workflow documentation (current hook versions, no legacy Prettier hook, and updated setup/test commands).
 
 ## [3.0.0] - 2026-02-06
 ### Fixed
@@ -25,8 +28,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update Travis CI to test Python 3.10-3.14 (3.14 as allow-failure), use editable install via pip, and replace `setup.py test` with unittest discovery.
 - Delete original files only once per asset and only after compressed variants are saved.
 - Tests: Add coverage for delete-once behavior when multiple compressors are enabled.
-- Migrate development linting from Pylint to Ruff, drop `pylintrc`, and centralize Ruff settings in `pyproject.toml`.
-- Modernize pre-commit and development workflow documentation (current hook versions, no legacy Prettier hook, and updated setup/test commands).
 
 ### Security
 - Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).
