@@ -335,6 +335,31 @@ class CollectStaticTest(SimpleTestCase):
 
             self.assertTrue(storage.exists("test.js.gz"))
 
+    def test_post_process_source_without_get_modified_time(self):
+        from static_compress.mixin import CompressMixin
+
+        class DestinationStorage(CompressMixin, FileSystemStorage):
+            pass
+
+        class SourceStorage:
+            pass
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_file = Path(temp_dir) / "test.js"
+            source_file.write_bytes(b"a" * 5000)
+
+            with self.settings(
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib"],
+                STATIC_COMPRESS_FILE_EXTS=["js"],
+            ):
+                storage = DestinationStorage(location=temp_dir)
+                paths = {"test.js": (SourceStorage(), "test.js")}
+
+                list(storage.post_process(paths, dry_run=False))
+
+                self.assertTrue(Path(temp_dir, "test.js.gz").exists())
+
     def test_collectstatic_skips_when_compressed_newer(self):
         with tempfile.TemporaryDirectory() as static_dir:
             with self.settings(

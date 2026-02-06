@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Fall back to original file metadata when `STATIC_COMPRESS_KEEP_ORIGINAL=False` and compressed variants are skipped by `STATIC_COMPRESS_MIN_SIZE_KB`.
 - Use storage compatibility fallback for compressed-file existence checks in `post_process`, avoiding failures when storage backends do not implement `exists()`.
+ - Add fallback for source modified-time lookup in `post_process` when `source_storage` does not implement `get_modified_time()`.
 
 ### Changed
 - Tests: Add coverage for metadata fallback to original files and compressed-variant precedence for metadata lookups.
 - Tests: Add coverage for `post_process` compatibility with storages that rely on `path()` fallback when `exists()` is not implemented.
+- Tests: Add coverage for `post_process` with source storages that do not implement `get_modified_time()`.
 
 ## [3.0.1] - 2026-02-06
 ### Changed
