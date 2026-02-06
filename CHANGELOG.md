@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Fall back to original file metadata when `STATIC_COMPRESS_KEEP_ORIGINAL=False` and compressed variants are skipped by `STATIC_COMPRESS_MIN_SIZE_KB`.
+
+### Changed
+- Tests: Add coverage for metadata fallback to original files and compressed-variant precedence for metadata lookups.
 
 ## [3.0.1] - 2026-02-06
 ### Changed
