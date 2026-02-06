@@ -24,7 +24,11 @@ $ pip install django-static-compress
 Then update your settings.py:
 
 ```py
-STATICFILES_STORAGE = 'static_compress.CompressedStaticFilesStorage'
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "static_compress.storage.CompressedStaticFilesStorage",
+    },
+}
 ```
 
 When you run `python manage.py collectstatic` it will have an additional post-processing pass to compress your static files.
