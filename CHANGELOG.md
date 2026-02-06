@@ -6,10 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Added
-- Add upstream sync GitHub Actions workflow.
-- Add GitLab CI mirror workflow (includes internal CA trust and push URL handling).
-
 ### Fixed
 - Fix manifest path selection for compressed files by preferring `hashed_files` mappings and falling back to `hashed_name` or original paths when needed.
 
