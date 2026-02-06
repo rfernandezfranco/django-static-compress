@@ -1,3 +1,4 @@
-# pylint: disable=wildcard-import
-from .mixin import *
-from .storage import *
+from .mixin import CompressMixin
+from .storage import CompressedManifestStaticFilesStorage, CompressedStaticFilesStorage
+
+__all__ = ["CompressMixin", "CompressedManifestStaticFilesStorage", "CompressedStaticFilesStorage"]

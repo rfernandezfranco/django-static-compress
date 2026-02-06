@@ -83,16 +83,19 @@ Here's some statistics from [TipMe](https://tipme.in.th)'s jQuery and React bund
 
 (.gz is Zopfli compressed, and .br is Brotli compressed)
 
-## Developing
+## Development
 
 This fork is actively maintained. Issues and pull requests are welcome.
 
-1.  Run `python setup.py develop`
+Development workflow:
+
+1.  Run `pip install -e .`
 2.  Run `pip install -r requirements-dev.txt && pre-commit install`
 3.  Start hacking
-4.  Run test: `python setup.py test`
+4.  Run test: `python -m unittest discover -s test`
 5.  Run integration test: `cd integration_test; python manage.py test`
-6.  Commit. Pre-commit will warn if you have any changes.
+6.  Run hooks manually when needed: `pre-commit run --all-files`
+7.  Commit. Pre-commit will warn if you have any changes.
 
 ## License
 
