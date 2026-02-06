@@ -303,3 +303,40 @@ class CollectStaticTest(SimpleTestCase):
             list(storage.post_process(paths, dry_run=False))
 
             self.assertTrue(storage.exists("test.js.gz"))
+
+    def test_collectstatic_skips_when_compressed_newer(self):
+        with tempfile.TemporaryDirectory() as static_dir:
+            with self.settings(
+                STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib"],
+                STATIC_ROOT=self.temp_dir.name,
+                STATICFILES_DIRS=[static_dir],
+            ):
+                output_file_path = self.temp_dir_path / "test.js"
+                compressed_file_path = self.temp_dir_path / "test.js.gz"
+
+                static_file = Path(static_dir) / "test.js"
+                with static_file.open("wb") as fp:
+                    fp.write(b"a" * 5000)
+
+                call_command("collectstatic", interactive=False, verbosity=0)
+
+                self.assertFileExist(output_file_path)
+                self.assertFileExist(compressed_file_path)
+
+                # Make compressed file newer than original
+                os.utime(static_file, times=(1, 1))
+                os.utime(output_file_path, times=(1, 1))
+                os.utime(compressed_file_path, times=(100, 100))
+
+                compressed_mtime_before = compressed_file_path.stat().st_mtime
+
+                call_command("collectstatic", interactive=False, verbosity=0)
+
+                compressed_mtime_after = compressed_file_path.stat().st_mtime
+                self.assertEqual(compressed_mtime_before, compressed_mtime_after)
+
+
+
+

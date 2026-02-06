@@ -153,19 +153,26 @@ class CompressMixin:
                         self.delete(dest_compressor_path)
                 continue
             src_mtime = source_storage.get_modified_time(path)
-            with self._open(dest_path) as file:
-                for compressor in self.compressors:
-                    dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
-                    # Check if the original file has been changed.
-                    # If not, no need to compress again.
-                    try:
-                        dest_mtime = self._storage_get_modified_time(dest_compressor_path)
-                        file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
-                    except FileNotFoundError:
-                        file_is_unmodified = False
-                    if file_is_unmodified:
-                        continue
+            to_compress = []
+            for compressor in self.compressors:
+                dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
+                if not self._storage_exists(dest_compressor_path):
+                    to_compress.append((compressor, dest_compressor_path))
+                    continue
 
+                # Check if the original file has been changed.
+                # If not, no need to compress again.
+                try:
+                    dest_mtime = self._storage_get_modified_time(dest_compressor_path)
+                    file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
+                except (FileNotFoundError, KeyError):
+                    file_is_unmodified = False
+                if not file_is_unmodified:
+                    to_compress.append((compressor, dest_compressor_path))
+            if not to_compress:
+                continue
+            with self._open(dest_path) as file:
+                for compressor, dest_compressor_path in to_compress:
                     # Delete old gzip file, or Nginx will pick the old file to serve.
                     # Note: Django won't overwrite the file, so we have to delete it ourselves.
                     if self.exists(dest_compressor_path):
@@ -193,3 +200,6 @@ class CompressMixin:
             if file.endswith("." + extension):
                 return True
         return False
+
+
+
