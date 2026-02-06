@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.0.1] - 2026-02-06
 ### Changed
 - Migrate development linting from Pylint to Ruff, drop `pylintrc`, and centralize Ruff settings in `pyproject.toml`.
 - Modernize pre-commit and development workflow documentation (current hook versions, no legacy Prettier hook, and updated setup/test commands).
@@ -61,7 +63,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Updated Brotli and Zopfli
 
-[unreleased]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.0...HEAD
+[unreleased]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.1...HEAD
+[3.0.1]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/rfernandezfranco/django-static-compress/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/whs/django-static-compress/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whs/django-static-compress/compare/v1.2.1...v2.0.0
