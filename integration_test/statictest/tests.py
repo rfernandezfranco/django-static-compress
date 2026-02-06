@@ -52,6 +52,7 @@ class CollectStaticTest(SimpleTestCase):
         self.assertFileNotExist(self.temp_dir_path / (hashed_not_compressed + ".br"))
 
         hashed_too_small = hashed_files["too_small.js"]
+        self.assertFileExist(self.temp_dir_path / hashed_too_small)
         self.assertFileNotExist(self.temp_dir_path / (hashed_too_small + ".gz"))
         self.assertFileNotExist(self.temp_dir_path / (hashed_too_small + ".br"))
 
