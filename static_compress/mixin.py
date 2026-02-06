@@ -100,6 +100,12 @@ class CompressMixin:
                 ) from exc
             return self._datetime_from_timestamp(getmtime(path))
 
+    def _get_source_modified_time(self, source_storage, source_path, dest_path):
+        try:
+            return source_storage.get_modified_time(source_path)
+        except (AttributeError, NotImplementedError):
+            return self._storage_get_modified_time(dest_path)
+
     def get_alternate_compressed_name(self, name):
         for compressor in self.compressors:
             ext = compressor.extension
@@ -148,7 +154,7 @@ class CompressMixin:
                     if self.exists(dest_compressor_path):
                         self.delete(dest_compressor_path)
                 continue
-            src_mtime = source_storage.get_modified_time(path)
+            src_mtime = self._get_source_modified_time(source_storage, path, dest_path)
             to_compress = []
             for compressor in self.compressors:
                 dest_compressor_path = f"{dest_path}.{compressor.extension}"
