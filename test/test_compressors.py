@@ -15,11 +15,14 @@ class ZopfliCompressorTestCase(unittest.TestCase):
 
         compressor = ZopfliCompressor()
         out = compressor.compress("", file)
-        self.assertGreater(out.size, 0)
-        self.assertLessEqual(out.size, len(content))
+        try:
+            self.assertGreater(out.size, 0)
+            self.assertLessEqual(out.size, len(content))
 
-        result = gzip.decompress(out.read())
-        self.assertEqual(result, content)
+            result = gzip.decompress(out.read())
+            self.assertEqual(result, content)
+        finally:
+            out.close()
 
 
 class BrotliCompressorTestCase(unittest.TestCase):
@@ -28,11 +31,14 @@ class BrotliCompressorTestCase(unittest.TestCase):
 
         compressor = BrotliCompressor()
         out = compressor.compress("", file)
-        self.assertGreater(out.size, 0)
-        self.assertLessEqual(out.size, len(content))
+        try:
+            self.assertGreater(out.size, 0)
+            self.assertLessEqual(out.size, len(content))
 
-        result = brotli.decompress(out.read())
-        self.assertEqual(result, content)
+            result = brotli.decompress(out.read())
+            self.assertEqual(result, content)
+        finally:
+            out.close()
 
 
 class ZlibCompressorTestCase(unittest.TestCase):
@@ -41,8 +47,11 @@ class ZlibCompressorTestCase(unittest.TestCase):
 
         compressor = ZlibCompressor()
         out = compressor.compress("", file)
-        self.assertGreater(out.size, 0)
-        self.assertLessEqual(out.size, len(content))
+        try:
+            self.assertGreater(out.size, 0)
+            self.assertLessEqual(out.size, len(content))
 
-        result = gzip.decompress(out.read())
-        self.assertEqual(result, content)
+            result = gzip.decompress(out.read())
+            self.assertEqual(result, content)
+        finally:
+            out.close()
