@@ -366,3 +366,34 @@ class CollectStaticTest(SimpleTestCase):
                 list(storage.post_process(paths, dry_run=False))
 
                 self.assertEqual(storage.delete_calls.get("test.js"), 1)
+
+    def test_post_process_works_when_exists_is_not_implemented(self):
+        from static_compress.mixin import CompressMixin
+
+        class ExistsNotImplementedStorage(CompressMixin, FileSystemStorage):
+            def exists(self, name):
+                raise NotImplementedError
+
+        class SourceStorage:
+            def __init__(self, mtime):
+                self._mtime = mtime
+
+            def get_modified_time(self, name):
+                return self._mtime
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source_path = Path(temp_dir) / "test.js"
+            source_path.write_bytes(b"a" * 5000)
+
+            with self.settings(
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib"],
+                STATIC_COMPRESS_FILE_EXTS=["js"],
+            ):
+                storage = ExistsNotImplementedStorage(location=temp_dir)
+                source_storage = SourceStorage(storage.get_modified_time("test.js"))
+                paths = {"test.js": (source_storage, "test.js")}
+
+                list(storage.post_process(paths, dry_run=False))
+
+                self.assertTrue(Path(temp_dir, "test.js.gz").exists())
