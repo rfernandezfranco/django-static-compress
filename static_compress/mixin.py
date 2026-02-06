@@ -182,6 +182,8 @@ class CompressMixin:
                 if not file_is_unmodified:
                     to_compress.append((compressor, dest_compressor_path))
             if not to_compress:
+                if not self.keep_original:
+                    self.delete(name)
                 continue
             with self._open(dest_path) as file:
                 saved_any = False
