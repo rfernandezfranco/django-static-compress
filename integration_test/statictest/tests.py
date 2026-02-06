@@ -393,6 +393,36 @@ class CollectStaticTest(SimpleTestCase):
                 compressed_mtime_after = compressed_file_path.stat().st_mtime
                 self.assertEqual(compressed_mtime_before, compressed_mtime_after)
 
+    def test_collectstatic_removes_original_when_compressed_newer_and_keep_original_false(self):
+        with tempfile.TemporaryDirectory() as static_dir:
+            with self.settings(
+                STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib"],
+                STATIC_COMPRESS_KEEP_ORIGINAL=False,
+                STATIC_ROOT=self.temp_dir.name,
+                STATICFILES_DIRS=[static_dir],
+            ):
+                output_file_path = self.temp_dir_path / "test.js"
+                compressed_file_path = self.temp_dir_path / "test.js.gz"
+
+                static_file = Path(static_dir) / "test.js"
+                static_file.write_bytes(b"a" * 5000)
+
+                call_command("collectstatic", interactive=False, verbosity=0)
+
+                self.assertFileNotExist(output_file_path)
+                self.assertFileExist(compressed_file_path)
+
+                os.utime(static_file, times=(1, 1))
+                compressed_mtime_before = compressed_file_path.stat().st_mtime
+
+                call_command("collectstatic", interactive=False, verbosity=0)
+
+                self.assertFileNotExist(output_file_path)
+                self.assertFileExist(compressed_file_path)
+                self.assertEqual(compressed_mtime_before, compressed_file_path.stat().st_mtime)
+
     def test_delete_original_only_once(self):
         from static_compress.mixin import CompressMixin
 
