@@ -145,7 +145,7 @@ class CompressMixin:
                 # Note: We have to delete the file in case it was created in a previous iteration.
                 for compressor in self.compressors:
                     dest_compressor_path = f"{dest_path}.{compressor.extension}"
-                    if self.exists(dest_compressor_path):
+                    if self._storage_exists(dest_compressor_path):
                         self.delete(dest_compressor_path)
                 continue
             src_mtime = source_storage.get_modified_time(path)
@@ -172,7 +172,7 @@ class CompressMixin:
                 for compressor, dest_compressor_path in to_compress:
                     # Delete old gzip file, or Nginx will pick the old file to serve.
                     # Note: Django won't overwrite the file, so we have to delete it ourselves.
-                    if self.exists(dest_compressor_path):
+                    if self._storage_exists(dest_compressor_path):
                         self.delete(dest_compressor_path)
                     out = compressor.compress(path, file)
 
