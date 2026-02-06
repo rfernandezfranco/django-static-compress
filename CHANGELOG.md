@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.0.2] - 2026-02-06
 ### Fixed
 - Fall back to original file metadata when `STATIC_COMPRESS_KEEP_ORIGINAL=False` and compressed variants are skipped by `STATIC_COMPRESS_MIN_SIZE_KB`.
 - Use storage compatibility fallback for compressed-file existence checks in `post_process`, avoiding failures when storage backends do not implement `exists()`.
@@ -74,7 +76,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Updated Brotli and Zopfli
 
-[unreleased]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.1...HEAD
+[unreleased]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.2...HEAD
+[3.0.2]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.1...v3.0.2
 [3.0.1]: https://github.com/rfernandezfranco/django-static-compress/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/rfernandezfranco/django-static-compress/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/whs/django-static-compress/compare/v2.0.0...v2.1.0
