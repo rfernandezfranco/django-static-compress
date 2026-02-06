@@ -90,7 +90,8 @@ Development workflow:
 3.  Start hacking
 4.  Run test: `python -m unittest discover -s test`
 5.  Run integration test: `cd integration_test; python manage.py test`
-6.  Commit. Pre-commit will warn if you have any changes.
+6.  Run hooks manually when needed: `pre-commit run --all-files`
+7.  Commit. Pre-commit will warn if you have any changes.
 
 ## License
 
