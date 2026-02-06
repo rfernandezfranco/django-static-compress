@@ -13,13 +13,11 @@ repos:
     hooks:
       - id: black
         entry: black -l 120 -t py311
-  - repo: local
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
     hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        files: \.py$
+      - id: ruff
+        args: [--fix]
   - repo: https://github.com/prettier/prettier.git
     rev: 1.14.0
     hooks:
