@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add GitLab CI mirror workflow (includes internal CA trust and push URL handling).
 
 ### Fixed
-- Fix manifest path selection for compressed files by preferring `hashed_files` when available.
+- Fix manifest path selection for compressed files by preferring `hashed_files` mappings and falling back to `hashed_name` or original paths when needed.
 
 ### Changed
 - Align minimum Django version with supported Python range.
