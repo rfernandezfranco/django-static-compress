@@ -145,6 +145,19 @@ class CollectStaticTest(SimpleTestCase):
                 self.assertFileExist(self.temp_dir_path / (file + ".gz"))
                 self.assertFileExist(self.temp_dir_path / (file + ".br"))
 
+    def test_min_size_overrides_keep_original(self):
+        with self.settings(
+            STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+            STATIC_COMPRESS_MIN_SIZE_KB=1000,
+            STATIC_COMPRESS_KEEP_ORIGINAL=False,
+            STATIC_ROOT=self.temp_dir.name,
+        ):
+            call_command("collectstatic", interactive=False, verbosity=0)
+            for file in ("milligram.css", "system.js", "speaker.svg"):
+                self.assertFileExist(self.temp_dir_path / file)
+                self.assertFileNotExist(self.temp_dir_path / (file + ".gz"))
+                self.assertFileNotExist(self.temp_dir_path / (file + ".br"))
+
     def test_collectstatic_with_zlib(self):
         with self.settings(
             STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},

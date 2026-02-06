@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Align minimum Django version with supported Python range.
 - Bump Python support metadata to 3.10+.
+- Clarify that `STATIC_COMPRESS_MIN_SIZE_KB` takes precedence over `STATIC_COMPRESS_KEEP_ORIGINAL` for small files.
+- Tests: Add coverage to ensure small files keep originals and skip compressed variants when `KEEP_ORIGINAL=False`.
 
 ### Security
 - Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).

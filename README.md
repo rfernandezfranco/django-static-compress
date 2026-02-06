@@ -58,6 +58,10 @@ After compressing the static files, _django-static-compress_ still leaves the or
 
 If the file is too small, it isn't worth compressing. You can change the minimum size in KiB at which file should be compressed, by changing `STATIC_COMPRESS_MIN_SIZE_KB`.
 
+**Interaction between `STATIC_COMPRESS_MIN_SIZE_KB` and `STATIC_COMPRESS_KEEP_ORIGINAL`:**
+
+If a file is smaller than `STATIC_COMPRESS_MIN_SIZE_KB`, compressed variants are removed (or not generated). In this case, the original file is **always kept**, even if `STATIC_COMPRESS_KEEP_ORIGINAL=False`. This avoids serving stale compressed files and prevents losing the asset entirely when it is too small to compress.
+
 By default, _django-static-compress_ use Zopfli to compress to gzip. Zopfli compress better than gzip, but will take more time to compress. If you want to create gzip file with built-in zlib compressor, replace `'gz'` with `'gz+zlib'` in `STATIC_COMPRESS_METHODS`.
 
 ## File size reduction
