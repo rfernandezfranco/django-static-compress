@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a pre-check pass to determine which compressed variants need updates before opening source files.
 - Tests: Add coverage to ensure recompression is skipped when compressed files are newer than originals.
 - Tests: Make manifest integration tests hash-agnostic by reading hashed filenames from `staticfiles.json` instead of hardcoded digests.
+- Update Travis CI to test Python 3.10-3.14 (3.14 as allow-failure), use editable install via pip, and replace `setup.py test` with unittest discovery.
 
 ### Security
 - Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).
@@ -63,5 +64,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [1.2.1]: https://github.com/whs/django-static-compress/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whs/django-static-compress/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/whs/django-static-compress/compare/v1.1.0...v1.1.1
-
 
