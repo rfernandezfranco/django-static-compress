@@ -32,7 +32,7 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const base = "master";
+            const base = "dev";
             const headRef = "upstream-master";
             const head = `${owner}:${headRef}`;
 
