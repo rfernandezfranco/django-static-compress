@@ -1,16 +1,14 @@
+import gzip
+import json
 import os
 import tempfile
 from pathlib import Path
-import gzip
-import json
 
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
-from django.core.files.storage import Storage
-from django.utils import timezone
-
-from django.test import SimpleTestCase
+from django.core.files.storage import FileSystemStorage, Storage
 from django.core.management import call_command
+from django.test import SimpleTestCase
+from django.utils import timezone
 
 
 class PathlessBaseStorage(Storage):
@@ -54,10 +52,10 @@ class CollectStaticTest(SimpleTestCase):
         self.temp_dir.cleanup()
 
     def assertFileExist(self, path):
-        self.assertTrue(Path(path).exists(), "File {} should exists".format(path))
+        self.assertTrue(Path(path).exists(), f"File {path} should exists")
 
     def assertFileNotExist(self, path):
-        self.assertFalse(Path(path).exists(), "File {} shouldn't exists".format(path))
+        self.assertFalse(Path(path).exists(), f"File {path} shouldn't exists")
 
     def assertStaticFiles(self):
         for file in ["milligram.css", "system.js", "speaker.svg"]:
@@ -368,7 +366,3 @@ class CollectStaticTest(SimpleTestCase):
                 list(storage.post_process(paths, dry_run=False))
 
                 self.assertEqual(storage.delete_calls.get("test.js"), 1)
-
-
-
-

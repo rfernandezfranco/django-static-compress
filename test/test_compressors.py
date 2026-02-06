@@ -1,9 +1,10 @@
-import unittest
 import gzip
+import unittest
 from io import BytesIO
 
-from static_compress.compressors import BrotliCompressor, ZopfliCompressor, ZlibCompressor
 import brotli
+
+from static_compress.compressors import BrotliCompressor, ZlibCompressor, ZopfliCompressor
 
 content = b"a" * 100
 

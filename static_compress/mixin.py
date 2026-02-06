@@ -1,6 +1,6 @@
+import errno
 import os
 from os.path import getatime, getctime, getmtime
-import errno
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -52,65 +52,61 @@ class CompressMixin:
     def _storage_exists(self, name):
         try:
             return self.exists(name)
-        except (AttributeError, NotImplementedError):
+        except (AttributeError, NotImplementedError) as exc:
             path = self._try_path(name)
             if path is None:
-                raise ImproperlyConfigured(
-                    "Storage must implement exists() or provide path() for {}".format(name)
-                )
+                raise ImproperlyConfigured(f"Storage must implement exists() or provide path() for {name}") from exc
             return os.path.exists(path)
 
     def _storage_size(self, name):
         try:
             return self.size(name)
-        except (AttributeError, NotImplementedError):
+        except (AttributeError, NotImplementedError) as exc:
             path = self._try_path(name)
             if path is None:
-                raise ImproperlyConfigured(
-                    "Storage must implement size() or provide path() for {}".format(name)
-                )
+                raise ImproperlyConfigured(f"Storage must implement size() or provide path() for {name}") from exc
             return os.path.getsize(path)
 
     def _storage_get_accessed_time(self, name):
         try:
             return super().get_accessed_time(name)
-        except (AttributeError, NotImplementedError):
+        except (AttributeError, NotImplementedError) as exc:
             path = self._try_path(name)
             if path is None:
                 raise ImproperlyConfigured(
-                    "Storage must implement get_accessed_time() or provide path() for {}".format(name)
-                )
+                    f"Storage must implement get_accessed_time() or provide path() for {name}"
+                ) from exc
             return self._datetime_from_timestamp(getatime(path))
 
     def _storage_get_created_time(self, name):
         try:
             return super().get_created_time(name)
-        except (AttributeError, NotImplementedError):
+        except (AttributeError, NotImplementedError) as exc:
             path = self._try_path(name)
             if path is None:
                 raise ImproperlyConfigured(
-                    "Storage must implement get_created_time() or provide path() for {}".format(name)
-                )
+                    f"Storage must implement get_created_time() or provide path() for {name}"
+                ) from exc
             return self._datetime_from_timestamp(getctime(path))
 
     def _storage_get_modified_time(self, name):
         try:
-            return super(CompressMixin, self).get_modified_time(name)
-        except (AttributeError, NotImplementedError):
+            return super().get_modified_time(name)
+        except (AttributeError, NotImplementedError) as exc:
             path = self._try_path(name)
             if path is None:
                 raise ImproperlyConfigured(
-                    "Storage must implement get_modified_time() or provide path() for {}".format(name)
-                )
+                    f"Storage must implement get_modified_time() or provide path() for {name}"
+                ) from exc
             return self._datetime_from_timestamp(getmtime(path))
 
     def get_alternate_compressed_name(self, name):
         for compressor in self.compressors:
             ext = compressor.extension
-            if name.endswith(".{}".format(ext)):
+            if name.endswith(f".{ext}"):
                 candidate = name
             else:
-                candidate = "{}.{}".format(name, ext)
+                candidate = f"{name}.{ext}"
             if self._storage_exists(candidate):
                 return candidate
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), name)
@@ -148,14 +144,14 @@ class CompressMixin:
                 # Delete old gzip file, or Nginx will pick the old file to serve.
                 # Note: We have to delete the file in case it was created in a previous iteration.
                 for compressor in self.compressors:
-                    dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
+                    dest_compressor_path = f"{dest_path}.{compressor.extension}"
                     if self.exists(dest_compressor_path):
                         self.delete(dest_compressor_path)
                 continue
             src_mtime = source_storage.get_modified_time(path)
             to_compress = []
             for compressor in self.compressors:
-                dest_compressor_path = "{}.{}".format(dest_path, compressor.extension)
+                dest_compressor_path = f"{dest_path}.{compressor.extension}"
                 if not self._storage_exists(dest_compressor_path):
                     to_compress.append((compressor, dest_compressor_path))
                     continue
@@ -202,6 +198,3 @@ class CompressMixin:
             if file.endswith("." + extension):
                 return True
         return False
-
-
-

@@ -1,4 +1,4 @@
-from django.contrib.staticfiles.storage import StaticFilesStorage, ManifestStaticFilesStorage
+from django.contrib.staticfiles.storage import ManifestStaticFilesStorage, StaticFilesStorage
 
 from . import mixin
 
