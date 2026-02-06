@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Add fallback for source modified-time lookup in `post_process` when `source_storage` does not implement `get_modified_time()`.
+
+### Changed
+- Tests: Add coverage for `post_process` with source storages that do not implement `get_modified_time()`.
 
 ## [3.0.1] - 2026-02-06
 ### Changed
