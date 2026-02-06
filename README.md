@@ -79,9 +79,11 @@ Here's some statistics from [TipMe](https://tipme.in.th)'s jQuery and React bund
 
 (.gz is Zopfli compressed, and .br is Brotli compressed)
 
-## Developing
+## Development
 
 This project is [unmaintained](http://unmaintained.tech/). You may use it, but issues and pull requests might be ignored.
+
+Development workflow:
 
 1.  Run `python setup.py develop`
 2.  Run `pip install -r requirements-dev.txt && pre-commit install`
