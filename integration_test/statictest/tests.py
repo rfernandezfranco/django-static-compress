@@ -2,6 +2,7 @@ import os
 import tempfile
 from pathlib import Path
 import gzip
+import json
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import Storage
@@ -72,25 +73,24 @@ class CollectStaticTest(SimpleTestCase):
             self.assertFileNotExist(self.temp_dir_path / file)
 
     def assertManifestStaticFiles(self):
-        for file in [
-            "milligram.e824f9df03b0.css",
-            "system.0177d7f30ce9.js",
-            "speaker.5a6001289b0f.svg",
-        ]:
-            self.assertFileExist(self.temp_dir_path / file)
-            self.assertFileExist(self.temp_dir_path / (file + ".gz"))
-            self.assertFileExist(self.temp_dir_path / (file + ".br"))
+        manifest = json.loads((self.temp_dir_path / "staticfiles.json").read_text())
+        hashed_files = manifest["paths"]
 
-        self.assertFileExist(self.temp_dir_path / "not_compressed.9517ee88fcaa.txt")
+        for file in ("milligram.css", "system.js", "speaker.svg"):
+            hashed = hashed_files[file]
+            self.assertFileExist(self.temp_dir_path / hashed)
+            self.assertFileExist(self.temp_dir_path / (hashed + ".gz"))
+            self.assertFileExist(self.temp_dir_path / (hashed + ".br"))
 
-        for file in [
-            "not_compressed.9517ee88fcaa.txt.gz",
-            "not_compressed.9517ee88fcaa.txt.br",
-        ]:
-            self.assertFileNotExist(self.temp_dir_path / file)
+        hashed_not_compressed = hashed_files["not_compressed.txt"]
+        self.assertFileExist(self.temp_dir_path / hashed_not_compressed)
+        self.assertFileNotExist(self.temp_dir_path / (hashed_not_compressed + ".gz"))
+        self.assertFileNotExist(self.temp_dir_path / (hashed_not_compressed + ".br"))
 
-        for file in ("too_small.1fad53895b9b.js.gz", "too_small.1fad53895b9b.js.br"):
-            self.assertFileNotExist(self.temp_dir_path / file)
+        hashed_too_small = hashed_files["too_small.js"]
+        self.assertFileExist(self.temp_dir_path / hashed_too_small)
+        self.assertFileNotExist(self.temp_dir_path / (hashed_too_small + ".gz"))
+        self.assertFileNotExist(self.temp_dir_path / (hashed_too_small + ".br"))
 
     def test_collectstatic_static(self):
         with self.settings(
