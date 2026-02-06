@@ -111,20 +111,30 @@ class CompressMixin:
                 return candidate
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), name)
 
+    def _get_metadata_target_name(self, name):
+        if self.keep_original:
+            return name
+        try:
+            return self.get_alternate_compressed_name(name)
+        except FileNotFoundError:
+            if self._storage_exists(name):
+                return name
+            raise
+
     def get_accessed_time(self, name):
         if self.keep_original:
             return super().get_accessed_time(name)
-        return self._storage_get_accessed_time(self.get_alternate_compressed_name(name))
+        return self._storage_get_accessed_time(self._get_metadata_target_name(name))
 
     def get_created_time(self, name):
         if self.keep_original:
             return super().get_created_time(name)
-        return self._storage_get_created_time(self.get_alternate_compressed_name(name))
+        return self._storage_get_created_time(self._get_metadata_target_name(name))
 
     def get_modified_time(self, name):
         if self.keep_original:
             return super().get_modified_time(name)
-        return self._storage_get_modified_time(self.get_alternate_compressed_name(name))
+        return self._storage_get_modified_time(self._get_metadata_target_name(name))
 
     def post_process(self, paths, dry_run=False, **options):
         if hasattr(super(), "post_process"):
