@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage, Storage
+from django.core.files.storage import FileSystemStorage, Storage, storages
 from django.core.management import call_command
 from django.test import SimpleTestCase
 from django.utils import timezone
@@ -192,6 +192,38 @@ class CollectStaticTest(SimpleTestCase):
                 self.assertFileExist(self.temp_dir_path / file)
                 self.assertFileNotExist(self.temp_dir_path / (file + ".gz"))
                 self.assertFileNotExist(self.temp_dir_path / (file + ".br"))
+
+    def test_metadata_falls_back_to_original_when_file_is_not_compressed(self):
+        with self.settings(
+            STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+            STATIC_COMPRESS_MIN_SIZE_KB=1000,
+            STATIC_COMPRESS_KEEP_ORIGINAL=False,
+            STATIC_ROOT=self.temp_dir.name,
+        ):
+            call_command("collectstatic", interactive=False, verbosity=0)
+
+            storage = storages["staticfiles"]
+
+            self.assertIsNotNone(storage.get_accessed_time("too_small.js"))
+            self.assertIsNotNone(storage.get_created_time("too_small.js"))
+            self.assertIsNotNone(storage.get_modified_time("too_small.js"))
+
+    def test_metadata_prefers_compressed_variant_when_available(self):
+        with self.settings(
+            STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+            STATIC_COMPRESS_MIN_SIZE_KB=1,
+            STATIC_COMPRESS_METHODS=["gz+zlib"],
+            STATIC_COMPRESS_KEEP_ORIGINAL=False,
+            STATIC_ROOT=self.temp_dir.name,
+        ):
+            call_command("collectstatic", interactive=False, verbosity=0)
+
+            storage = storages["staticfiles"]
+
+            self.assertEqual(
+                storage.get_modified_time("system.js"),
+                storage.get_modified_time("system.js.gz"),
+            )
 
     def test_collectstatic_with_zlib(self):
         with self.settings(
