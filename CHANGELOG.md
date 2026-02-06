@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Refactor storage access to prefer storage APIs (`exists`, `size`, and time lookups) with `path()` fallback, and improve errors when neither interface is available.
+- Use storage-backed compressed name/time resolution when originals are removed to improve compatibility with non-filesystem storages.
+- Tests: Add coverage for `post_process` behavior with storages that do not implement `path()`.
 
 ## [2.1.0] - 2025-02-21
 ## Fixed
