@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Use storage compatibility fallback for compressed-file existence checks in `post_process`, avoiding failures when storage backends do not implement `exists()`.
+
+### Changed
+- Tests: Add coverage for `post_process` compatibility with storages that rely on `path()` fallback when `exists()` is not implemented.
 
 ## [3.0.1] - 2026-02-06
 ### Changed
