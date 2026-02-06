@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Delete original files only once per asset and only after compressed variants are saved.
+- Tests: Add coverage for delete-once behavior when multiple compressors are enabled.
 
 ## [2.1.0] - 2025-02-21
 ## Fixed
