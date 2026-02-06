@@ -3,9 +3,11 @@ from setuptools import find_packages, setup
 setup(
     name="django-static-compress",
     version="2.1.0",
-    url="https://github.com/whs/django-static-compress",
+    url="https://github.com/rfernandezfranco/django-static-compress",
     author="Manatsawin Hanmongkolchai",
     author_email="manatsawin+pypi@gmail.com",
+    maintainer="Rodrigo Fernández Franco",
+    maintainer_email="rfernandezfranco@antel.com.uy",
     description="Precompress Django static files with Brotli and Zopfli",
     license="MIT",
     packages=find_packages(exclude=["tests"]),
