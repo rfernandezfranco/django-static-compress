@@ -97,6 +97,15 @@ Development workflow:
 6.  Run hooks manually when needed: `pre-commit run --all-files`
 7.  Commit. Pre-commit will warn if you have any changes.
 
+Lint policy:
+
+- Local development uses autofix-capable pre-commit hooks.
+- CI runs check-only lint/format validation in `.github/workflows/lint.yml`.
+
+Process conventions:
+
+- See `AGENTS.md` for planning, commit, changelog, and release conventions used in this repository.
+
 ## License
 
 Licensed under the [MIT License](LICENSE)

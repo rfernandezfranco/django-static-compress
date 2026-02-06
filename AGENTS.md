@@ -107,4 +107,3 @@ Run all of the following:
 - README must reflect active maintenance status.
 - Remove obsolete badges/instructions when they no longer match reality.
 - Keep development commands current (no legacy `setup.py develop/test` guidance).
-
