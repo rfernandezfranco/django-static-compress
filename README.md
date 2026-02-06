@@ -85,10 +85,10 @@ This project is [unmaintained](http://unmaintained.tech/). You may use it, but i
 
 Development workflow:
 
-1.  Run `python setup.py develop`
+1.  Run `pip install -e .`
 2.  Run `pip install -r requirements-dev.txt && pre-commit install`
 3.  Start hacking
-4.  Run test: `python setup.py test`
+4.  Run test: `python -m unittest discover -s test`
 5.  Run integration test: `cd integration_test; python manage.py test`
 6.  Commit. Pre-commit will warn if you have any changes.
 
