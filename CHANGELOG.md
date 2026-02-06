@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bump Python support metadata to 3.10+.
 - Clarify that `STATIC_COMPRESS_MIN_SIZE_KB` takes precedence over `STATIC_COMPRESS_KEEP_ORIGINAL` for small files.
 - Tests: Add coverage to ensure small files keep originals and skip compressed variants when `KEEP_ORIGINAL=False`.
+- Refactor storage access to prefer storage APIs (`exists`, `size`, and time lookups) with `path()` fallback, and improve errors when neither interface is available.
+- Use storage-backed compressed name/time resolution when originals are removed to improve compatibility with non-filesystem storages.
+- Tests: Add coverage for `post_process` behavior with storages that do not implement `path()`.
 
 ### Security
 - Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).
