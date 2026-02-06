@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Tests: Add coverage to ensure recompression is skipped when compressed files are newer than originals.
 - Tests: Make manifest integration tests hash-agnostic by reading hashed filenames from `staticfiles.json` instead of hardcoded digests.
 - Update Travis CI to test Python 3.10-3.14 (3.14 as allow-failure), use editable install via pip, and replace `setup.py test` with unittest discovery.
+- Delete original files only once per asset and only after compressed variants are saved.
+- Tests: Add coverage for delete-once behavior when multiple compressors are enabled.
 
 ### Security
 - Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).

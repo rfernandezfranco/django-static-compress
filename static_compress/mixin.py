@@ -172,6 +172,7 @@ class CompressMixin:
             if not to_compress:
                 continue
             with self._open(dest_path) as file:
+                saved_any = False
                 for compressor, dest_compressor_path in to_compress:
                     # Delete old gzip file, or Nginx will pick the old file to serve.
                     # Note: Django won't overwrite the file, so we have to delete it ourselves.
@@ -181,11 +182,12 @@ class CompressMixin:
 
                     if out:
                         self._save(dest_compressor_path, out)
-                        if not self.keep_original:
-                            self.delete(name)
+                        saved_any = True
                         yield dest_path, dest_compressor_path, True
 
                     file.seek(0)
+            if saved_any and not self.keep_original:
+                self.delete(name)
 
     def _get_dest_path(self, path):
         if hasattr(self, "hashed_files"):

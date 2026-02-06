@@ -5,6 +5,7 @@ import gzip
 import json
 
 from django.core.files.base import ContentFile
+from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import Storage
 from django.utils import timezone
 
@@ -336,6 +337,37 @@ class CollectStaticTest(SimpleTestCase):
 
                 compressed_mtime_after = compressed_file_path.stat().st_mtime
                 self.assertEqual(compressed_mtime_before, compressed_mtime_after)
+
+    def test_delete_original_only_once(self):
+        from static_compress.mixin import CompressMixin
+
+        class CountingStorage(CompressMixin, FileSystemStorage):
+            def __init__(self, *args, **kwargs):
+                super().__init__(*args, **kwargs)
+                self.delete_calls = {}
+
+            def delete(self, name):
+                self.delete_calls[name] = self.delete_calls.get(name, 0) + 1
+                return super().delete(name)
+
+        with tempfile.TemporaryDirectory() as src_dir, tempfile.TemporaryDirectory() as dest_dir:
+            with self.settings(
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib", "br"],
+                STATIC_COMPRESS_FILE_EXTS=["js"],
+                STATIC_COMPRESS_KEEP_ORIGINAL=False,
+            ):
+                content = b"a" * 5000
+                Path(src_dir, "test.js").write_bytes(content)
+                Path(dest_dir, "test.js").write_bytes(content)
+
+                storage = CountingStorage(location=dest_dir)
+                source_storage = FileSystemStorage(location=src_dir)
+                paths = {"test.js": (source_storage, "test.js")}
+
+                list(storage.post_process(paths, dry_run=False))
+
+                self.assertEqual(storage.delete_calls.get("test.js"), 1)
 
 
 
