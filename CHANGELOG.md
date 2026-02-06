@@ -6,9 +6,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add upstream sync GitHub Actions workflow.
+- Add GitLab CI mirror workflow (includes internal CA trust and push URL handling).
+
+### Fixed
+- Fix manifest path selection for compressed files by preferring `hashed_files` when available.
+
+### Changed
+- Align minimum Django version with supported Python range.
+- Bump Python support metadata to 3.10+.
+
+### Security
+- Raise minimum Brotli and Zopfli versions (Brotli>=1.2.0, zopfli>=0.3.0).
 
 ## [2.1.0] - 2025-02-21
-## Fixed
+### Fixed
 - Remove compressed files if one exists, but the original files is under `STATIC_COMPRESS_MIN_SIZE_KB`. (#211, thanks @Stegopoelkus)
 
 ## [2.0.0] - 2021-05-20
@@ -16,15 +29,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove `CompressedCachedStaticFilesStorage` as Django has removed it
 
 ## [1.2.1] - 2018-08-02
-
-## Fixed
-
+### Fixed
 - Updated static's compressed file are now properly updated (#7, #8, thanks @hongquan)
 
 ## [1.2.0] - 2018-07-30
-
 ### Added
-
 - Added the following settings (#2, thanks @hongquan)
   - `STATIC_COMPRESS_FILE_EXTS`
   - `STATIC_COMPRESS_METHODS`
@@ -32,18 +41,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added method `gz+zlib` for gzip compression without Zopfli
 
 ### Changed
-
 - Files smaller than 30kB are no longer compressed. This is the value that Webpack base on to split chunks
   - Set `STATIC_COMPRESS_MIN_SIZE_KB=0` to restore original behavior
 - Added coding standard checkers and formatters
 
 ## [1.1.1] - 2017-12-24
-
 ### Changed
-
 - Updated Brotli and Zopfli
 
-[unreleased]: https://github.com/whs/django-static-compress/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/rfernandezfranco/django-static-compress/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/whs/django-static-compress/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whs/django-static-compress/compare/v1.2.1...v2.0.0
 [1.2.1]: https://github.com/whs/django-static-compress/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whs/django-static-compress/compare/v1.1.1...v1.2.0
