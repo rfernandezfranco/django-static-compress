@@ -20,9 +20,7 @@ def _get_stream_max_size():
     try:
         if not settings.configured:
             return DEFAULT_STREAM_MAX_SIZE
-        value = getattr(
-            settings, "STATIC_COMPRESS_STREAM_MAX_SIZE", DEFAULT_STREAM_MAX_SIZE
-        )
+        value = getattr(settings, "STATIC_COMPRESS_STREAM_MAX_SIZE", DEFAULT_STREAM_MAX_SIZE)
     except ImproperlyConfigured:
         return DEFAULT_STREAM_MAX_SIZE
     try:

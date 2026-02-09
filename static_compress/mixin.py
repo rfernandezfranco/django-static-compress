@@ -194,7 +194,7 @@ class CompressMixin:
                         self.delete(dest_compressor_path)
                     out = compressor.compress(path, file)
 
-                    if out:
+                    if out is not None:
                         self._save(dest_compressor_path, out)
                         saved_any = True
                         yield dest_path, dest_compressor_path, True
