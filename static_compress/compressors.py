@@ -14,11 +14,21 @@ DEFAULT_STREAM_MAX_SIZE = 1 * 1024 * 1024
 def _get_stream_max_size():
     try:
         from django.conf import settings
-    except Exception:
+        from django.core.exceptions import ImproperlyConfigured
+    except ImportError:
         return DEFAULT_STREAM_MAX_SIZE
-    if not settings.configured:
+    try:
+        if not settings.configured:
+            return DEFAULT_STREAM_MAX_SIZE
+        value = getattr(
+            settings, "STATIC_COMPRESS_STREAM_MAX_SIZE", DEFAULT_STREAM_MAX_SIZE
+        )
+    except ImproperlyConfigured:
         return DEFAULT_STREAM_MAX_SIZE
-    return getattr(settings, "STATIC_COMPRESS_STREAM_MAX_SIZE", DEFAULT_STREAM_MAX_SIZE)
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return DEFAULT_STREAM_MAX_SIZE
 
 
 class BrotliCompressor:
