@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from setuptools import find_packages, setup
+
+README = Path(__file__).with_name("README.md")
 
 setup(
     name="django-static-compress",
@@ -9,6 +13,8 @@ setup(
     maintainer="Rodrigo Fernández Franco",
     maintainer_email="rfernandezfranco@antel.com.uy",
     description="Precompress Django static files with Brotli and Zopfli",
+    long_description=README.read_text(encoding="utf-8"),
+    long_description_content_type="text/markdown",
     license="MIT",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
