@@ -1,6 +1,7 @@
 import gzip
 import json
 import os
+import random
 import tempfile
 from pathlib import Path
 
@@ -392,6 +393,29 @@ class CollectStaticTest(SimpleTestCase):
 
                 compressed_mtime_after = compressed_file_path.stat().st_mtime
                 self.assertEqual(compressed_mtime_before, compressed_mtime_after)
+
+    def test_collectstatic_skips_when_reduction_is_below_threshold(self):
+        with tempfile.TemporaryDirectory() as static_dir:
+            with self.settings(
+                STORAGES={"staticfiles": {"BACKEND": "static_compress.storage.CompressedStaticFilesStorage"}},
+                STATIC_COMPRESS_MIN_SIZE_KB=1,
+                STATIC_COMPRESS_METHODS=["gz+zlib"],
+                STATIC_COMPRESS_FILE_EXTS=["js"],
+                STATIC_COMPRESS_KEEP_ORIGINAL=False,
+                STATIC_COMPRESS_MIN_REDUCTION_PCT=15,
+                STATIC_ROOT=self.temp_dir.name,
+                STATICFILES_DIRS=[static_dir],
+            ):
+                output_file_path = self.temp_dir_path / "random.js"
+                compressed_file_path = self.temp_dir_path / "random.js.gz"
+
+                content = random.Random(0).randbytes(5000)
+                Path(static_dir, "random.js").write_bytes(content)
+
+                call_command("collectstatic", interactive=False, verbosity=0)
+
+                self.assertFileExist(output_file_path)
+                self.assertFileNotExist(compressed_file_path)
 
     def test_collectstatic_removes_original_when_compressed_newer_and_keep_original_false(self):
         with tempfile.TemporaryDirectory() as static_dir:
