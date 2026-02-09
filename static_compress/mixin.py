@@ -36,7 +36,14 @@ class CompressMixin:
         self.compress_methods = getattr(settings, "STATIC_COMPRESS_METHODS", DEFAULT_METHODS)
         self.keep_original = getattr(settings, "STATIC_COMPRESS_KEEP_ORIGINAL", True)
         self.minimum_kb = getattr(settings, "STATIC_COMPRESS_MIN_SIZE_KB", 30)
-        self.minimum_reduction_pct = float(getattr(settings, "STATIC_COMPRESS_MIN_REDUCTION_PCT", 15))
+        try:
+            self.minimum_reduction_pct = float(
+                getattr(settings, "STATIC_COMPRESS_MIN_REDUCTION_PCT", 15)
+            )
+        except (TypeError, ValueError) as exc:
+            raise ImproperlyConfigured(
+                "STATIC_COMPRESS_MIN_REDUCTION_PCT must be a number."
+            ) from exc
 
         valid = [i for i in self.compress_methods if i in METHOD_MAPPING]
         if not valid:
