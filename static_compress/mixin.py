@@ -24,6 +24,7 @@ class CompressMixin:
     keep_original = True
     compressors = []
     minimum_kb = 0
+    minimum_reduction_pct = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -35,13 +36,31 @@ class CompressMixin:
         self.compress_methods = getattr(settings, "STATIC_COMPRESS_METHODS", DEFAULT_METHODS)
         self.keep_original = getattr(settings, "STATIC_COMPRESS_KEEP_ORIGINAL", True)
         self.minimum_kb = getattr(settings, "STATIC_COMPRESS_MIN_SIZE_KB", 30)
+        try:
+            self.minimum_reduction_pct = float(
+                getattr(settings, "STATIC_COMPRESS_MIN_REDUCTION_PCT", 15)
+            )
+        except (TypeError, ValueError) as exc:
+            raise ImproperlyConfigured(
+                "STATIC_COMPRESS_MIN_REDUCTION_PCT must be a number."
+            ) from exc
 
         valid = [i for i in self.compress_methods if i in METHOD_MAPPING]
         if not valid:
             raise ImproperlyConfigured("No valid method is defined in STATIC_COMPRESS_METHODS setting.")
         if "gz" in valid and "gz+zlib" in valid:
             raise ImproperlyConfigured("STATIC_COMPRESS_METHODS: gz and gz+zlib cannot be used at the same time.")
+        if not 0 <= self.minimum_reduction_pct <= 100:
+            raise ImproperlyConfigured("STATIC_COMPRESS_MIN_REDUCTION_PCT must be between 0 and 100.")
         self.compressors = [METHOD_MAPPING[k]() for k in valid]
+
+    def _meets_reduction_threshold(self, original_size, compressed_size):
+        if original_size <= 0:
+            return False
+        reduction_ratio = (original_size - compressed_size) / original_size
+        if self.minimum_reduction_pct == 0:
+            return reduction_ratio > 0
+        return reduction_ratio >= (self.minimum_reduction_pct / 100)
 
     def _try_path(self, name):
         try:
@@ -156,7 +175,8 @@ class CompressMixin:
             source_storage, path = paths[name]
             dest_path = self._get_dest_path(path)
             # Process if file is big enough
-            if self._storage_size(dest_path) < self.minimum_kb * 1024:
+            original_size = self._storage_size(dest_path)
+            if original_size < self.minimum_kb * 1024:
                 # Delete old gzip file, or Nginx will pick the old file to serve.
                 # Note: We have to delete the file in case it was created in a previous iteration.
                 for compressor in self.compressors:
@@ -166,6 +186,7 @@ class CompressMixin:
                 continue
             src_mtime = self._get_source_modified_time(source_storage, path, dest_path)
             to_compress = []
+            kept_any_compressed = False
             for compressor in self.compressors:
                 dest_compressor_path = f"{dest_path}.{compressor.extension}"
                 if not self._storage_exists(dest_compressor_path):
@@ -179,14 +200,19 @@ class CompressMixin:
                     file_is_unmodified = dest_mtime.replace(microsecond=0) >= src_mtime.replace(microsecond=0)
                 except (FileNotFoundError, KeyError):
                     file_is_unmodified = False
-                if not file_is_unmodified:
-                    to_compress.append((compressor, dest_compressor_path))
+                if file_is_unmodified:
+                    compressed_size = self._storage_size(dest_compressor_path)
+                    if not self._meets_reduction_threshold(original_size, compressed_size):
+                        self.delete(dest_compressor_path)
+                    else:
+                        kept_any_compressed = True
+                    continue
+                to_compress.append((compressor, dest_compressor_path))
             if not to_compress:
-                if not self.keep_original:
+                if not self.keep_original and kept_any_compressed:
                     self.delete(name)
                 continue
             with self._open(dest_path) as file:
-                saved_any = False
                 for compressor, dest_compressor_path in to_compress:
                     # Delete old gzip file, or Nginx will pick the old file to serve.
                     # Note: Django won't overwrite the file, so we have to delete it ourselves.
@@ -195,12 +221,14 @@ class CompressMixin:
                     out = compressor.compress(path, file)
 
                     if out:
-                        self._save(dest_compressor_path, out)
-                        saved_any = True
-                        yield dest_path, dest_compressor_path, True
+                        compressed_size = out.size
+                        if self._meets_reduction_threshold(original_size, compressed_size):
+                            self._save(dest_compressor_path, out)
+                            kept_any_compressed = True
+                            yield dest_path, dest_compressor_path, True
 
                     file.seek(0)
-            if saved_any and not self.keep_original:
+            if kept_any_compressed and not self.keep_original:
                 self.delete(name)
 
     def _get_dest_path(self, path):
