@@ -6,7 +6,7 @@ README = Path(__file__).with_name("README.md")
 
 setup(
     name="django-static-compress",
-    version="3.0.2",
+    version="3.1.0",
     url="https://github.com/rfernandezfranco/django-static-compress",
     author="Manatsawin Hanmongkolchai",
     author_email="manatsawin+pypi@gmail.com",
