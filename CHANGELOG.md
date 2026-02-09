@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
 - Stream Brotli and gzip compression outputs to reduce memory usage on large assets.
+- Add `STATIC_COMPRESS_STREAM_MAX_SIZE` to tune the in-memory buffer for streaming compression output.
 
 ## [3.0.2] - 2026-02-06
 ### Fixed
