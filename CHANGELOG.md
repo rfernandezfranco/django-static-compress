@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add `STATIC_COMPRESS_MIN_REDUCTION_PCT` to control the minimum compression savings required.
+
+### Changed
+- Skip saving compressed files that do not meet the minimum reduction threshold.
+- Tests: Add coverage for the minimum reduction threshold behavior.
 
 ## [3.0.2] - 2026-02-06
 ### Fixed
