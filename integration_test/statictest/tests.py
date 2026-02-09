@@ -5,10 +5,10 @@ import random
 import tempfile
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage, Storage, storages
 from django.core.management import call_command
-from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase
 from django.utils import timezone
 

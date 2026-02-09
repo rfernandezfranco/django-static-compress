@@ -8,13 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Add `STATIC_COMPRESS_MIN_REDUCTION_PCT` to control the minimum compression savings required.
+- Add `STATIC_COMPRESS_STREAM_MAX_SIZE` to tune the in-memory buffer for streaming compression output.
 
 ### Changed
 - Skip saving compressed files that do not meet the minimum reduction threshold.
 - Tests: Add coverage for the minimum reduction threshold behavior.
+- Stream Brotli and gzip compression outputs to reduce memory usage on large assets.
 
 ### Fixed
 - Validate non-numeric `STATIC_COMPRESS_MIN_REDUCTION_PCT` values early.
+- Ensure compressed outputs are saved when streaming produces unnamed files.
 
 ## [3.0.2] - 2026-02-06
 ### Fixed

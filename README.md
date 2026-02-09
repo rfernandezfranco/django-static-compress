@@ -61,6 +61,7 @@ STATIC_COMPRESS_METHODS = ['gz', 'br']
 STATIC_COMPRESS_KEEP_ORIGINAL = True
 STATIC_COMPRESS_MIN_SIZE_KB = 30
 STATIC_COMPRESS_MIN_REDUCTION_PCT = 15
+STATIC_COMPRESS_STREAM_MAX_SIZE = 1024 * 1024
 ```
 
 After compressing the static files, _django-static-compress_ still leaves the original files in _STATIC_ROOT_ folder. If you want to delete (to save disk space), change `STATIC_COMPRESS_KEEP_ORIGINAL` to `False`.
@@ -68,6 +69,12 @@ After compressing the static files, _django-static-compress_ still leaves the or
 If the file is too small, it isn't worth compressing. You can change the minimum size in KiB at which file should be compressed, by changing `STATIC_COMPRESS_MIN_SIZE_KB`.
 
 `STATIC_COMPRESS_MIN_REDUCTION_PCT` controls the minimum percentage reduction required to keep a compressed file. If the compressed output does not meet this reduction threshold, it is skipped and the original file is kept.
+
+`STATIC_COMPRESS_STREAM_MAX_SIZE` controls the in-memory buffer (in bytes) for streaming Brotli/gzip output before spooling to disk. Suggested values:
+
+- **≤1 GB RAM**: 256 KB–512 KB
+- **2–4 GB RAM**: 512 KB–1 MB
+- **≥4 GB RAM**: 1–2 MB
 
 **Interaction between `STATIC_COMPRESS_MIN_SIZE_KB` and `STATIC_COMPRESS_KEEP_ORIGINAL`:**
 
