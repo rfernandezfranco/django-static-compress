@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Skip saving compressed files that do not meet the minimum reduction threshold.
 - Tests: Add coverage for the minimum reduction threshold behavior.
 
+### Fixed
+- Validate non-numeric `STATIC_COMPRESS_MIN_REDUCTION_PCT` values early.
+
 ## [3.0.2] - 2026-02-06
 ### Fixed
 - Fall back to original file metadata when `STATIC_COMPRESS_KEEP_ORIGINAL=False` and compressed variants are skipped by `STATIC_COMPRESS_MIN_SIZE_KB`.
