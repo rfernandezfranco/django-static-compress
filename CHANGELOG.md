@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Add `STATIC_COMPRESS_STREAM_MAX_SIZE` to tune the in-memory buffer for streaming compression output.
 
+### Fixed
+- Ensure compressed outputs are saved when streaming produces unnamed files.
+
 ### Changed
 - Stream Brotli and gzip compression outputs to reduce memory usage on large assets.
 
